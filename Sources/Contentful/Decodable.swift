@@ -299,7 +299,7 @@ internal extension UnkeyedDecodingContainer {
             // These must be called after attempting to decode all other custom types.
             else if let nestedDictionary = try? decode(Dictionary<String, Any>.self) {
                 array.append(nestedDictionary)
-            } else if let nestedArray = try? decode(Array<Any>.self) {
+            } else if let nestedArray = try? decodeNested(Array<Any>.self) {
                 array.append(nestedArray)
             } else if let location = try? decode(Location.self) {
                 array.append(location)
@@ -307,6 +307,11 @@ internal extension UnkeyedDecodingContainer {
 
         }
         return array
+    }
+
+    internal mutating func decodeNested(_ type: Array<Any>.Type) throws -> Array<Any> {
+        var nestedContainer = try self.nestedUnkeyedContainer()
+        return try nestedContainer.decode(type)
     }
 
     internal mutating func decode(_ type: Dictionary<String, Any>.Type) throws -> Dictionary<String, Any> {
